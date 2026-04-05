@@ -185,6 +185,12 @@ gtk-runtime\bin
 
 junto al proyecto. `run_windows.bat` agrega esa ruta al `PATH` automaticamente antes de iniciar la app.
 
+Si ya tienes MSYS2 instalado en la ruta por defecto, puedes copiar el runtime con:
+
+```bat
+copy_gtk_runtime.bat
+```
+
 ### Estructura sugerida de entrega
 ```text
 webapp-catalogo/
