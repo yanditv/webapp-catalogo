@@ -147,6 +147,58 @@ La forma más práctica para no tocar mucho el sistema del cliente es esta:
 
 Con eso, el ejecutable intentará cargar GTK localmente sin depender del `PATH` global de Windows.
 
+## Opcion portable para Windows sin Docker ni .exe
+
+Si quieres que la app se comporte lo mas parecido posible al entorno de desarrollo, puedes ejecutarla como proyecto Python portable.
+
+### Archivos de apoyo
+- `setup_windows.bat`: crea `.venv` e instala dependencias.
+- `run_windows.bat`: inicia la app local y abre el navegador.
+
+### Preparacion
+En la maquina donde vas a preparar la entrega:
+
+```bat
+cd webapp
+setup_windows.bat
+```
+
+### Ejecucion
+Luego, para iniciar la app:
+
+```bat
+run_windows.bat
+```
+
+La app abre en:
+
+```text
+http://127.0.0.1:8000
+```
+
+### Runtime GTK local opcional
+Si necesitas exportacion PDF con WeasyPrint en Windows, puedes poner las DLL en:
+
+```text
+gtk-runtime\bin
+```
+
+junto al proyecto. `run_windows.bat` agrega esa ruta al `PATH` automaticamente antes de iniciar la app.
+
+### Estructura sugerida de entrega
+```text
+webapp-catalogo/
+  .venv/
+  gtk-runtime/
+    bin/
+  data/
+  static/
+  ui_templates/
+  pdf_templates/
+  fonts/
+  run_windows.bat
+```
+
 ## Estructura
 ```
 webapp/
