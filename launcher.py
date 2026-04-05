@@ -55,10 +55,11 @@ if __name__ == "__main__":
     _log("[INFO] launcher iniciado")
     try:
         import uvicorn
+        from main import app
 
         threading.Thread(target=_open_browser, daemon=True).start()
         uvicorn.run(
-            "main:app",
+            app,
             host=HOST,
             port=PORT,
             log_config=None,
