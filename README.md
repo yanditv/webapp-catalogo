@@ -93,6 +93,22 @@ El ejecutable se genera en:
 dist\catalogo-webapp.exe
 ```
 
+### Compilar una version debug con consola visible
+Si el ejecutable normal no abre o no da pistas, genera esta variante:
+
+```bat
+cd webapp
+build_windows_debug.bat
+```
+
+Salida esperada:
+
+```bat
+dist\catalogo-webapp-debug.exe
+```
+
+Esta version abre una consola y muestra errores de arranque directamente.
+
 ### Ejecutar el `.exe`
 - Al abrirlo, la app levanta un servidor local en `http://127.0.0.1:8000`.
 - También intenta abrir el navegador automáticamente.
