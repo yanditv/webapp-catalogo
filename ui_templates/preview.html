@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Preview · {{ catalog.name }}{% endblock %}
+
+{% block topnav %}
+<a class="btn" href="/catalogs/{{ catalog.id }}/edit">← Editor</a>
+<a class="btn btn-primary" href="/catalogs/{{ catalog.id }}/pdf">Descargar PDF</a>
+{% endblock %}
+
+{% block content %}
+<div class="preview-wrap">
+  <iframe src="/catalogs/{{ catalog.id }}/pdf?inline=1" class="preview-frame" title="Preview"></iframe>
+</div>
+{% endblock %}

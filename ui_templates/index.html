@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Mis catálogos{% endblock %}
+
+{% block content %}
+<section class="page-head">
+  <div>
+    <h1>Mis catálogos</h1>
+    <p class="muted">Crea, edita y exporta catálogos ilimitados.</p>
+  </div>
+  <button class="btn btn-primary" onclick="document.getElementById('new-dialog').showModal()">
+    + Nuevo catálogo
+  </button>
+</section>
+
+{% if catalogs %}
+<div class="cat-grid">
+  {% for c in catalogs %}
+  <article class="cat-card">
+    <div class="cat-card-body">
+      <div class="cat-tpl">{{ c.template_name }}</div>
+      <h3>{{ c.name }}</h3>
+      <p class="muted small">{{ c.products | length }} productos · actualizado {{ c.updated_at.strftime('%d/%m/%Y') }}</p>
+    </div>
+    <div class="cat-card-actions">
+      <a class="btn btn-outline" href="/catalogs/{{ c.id }}/edit">Editar</a>
+      <a class="btn" href="/catalogs/{{ c.id }}/preview" target="_blank">Preview</a>
+      <a class="btn" href="/catalogs/{{ c.id }}/pdf">PDF</a>
+      <form method="post" action="/catalogs/{{ c.id }}/duplicate" style="display:inline">
+        <button class="btn btn-ghost" title="Duplicar">⧉</button>
+      </form>
+      <form method="post" action="/catalogs/{{ c.id }}/delete" style="display:inline"
+            onsubmit="return confirm('¿Eliminar este catálogo?');">
+        <button class="btn btn-ghost danger" title="Eliminar">✕</button>
+      </form>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <h2>Aún no tienes catálogos</h2>
+  <p class="muted">Crea tu primer catálogo para comenzar.</p>
+  <button class="btn btn-primary" onclick="document.getElementById('new-dialog').showModal()">
+    Crear mi primer catálogo
+  </button>
+</div>
+{% endif %}
+
+<dialog id="new-dialog" class="dialog">
+  <form method="post" action="/catalogs">
+    <h2>Nuevo catálogo</h2>
+    <label>
+      <span>Nombre</span>
+      <input type="text" name="name" required placeholder="Catálogo 2026" autofocus>
+    </label>
+    <label>
+      <span>Plantilla</span>
+      <select name="template_name">
+        {% for t in templates %}
+        <option value="{{ t.key }}">{{ t.label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="dialog-actions">
+      <button type="button" class="btn" onclick="document.getElementById('new-dialog').close()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Crear</button>
+    </div>
+  </form>
+</dialog>
+{% endblock %}

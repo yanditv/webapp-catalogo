@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}Editar · {{ catalog.name }}{% endblock %}
+
+{% block topnav %}
+<a class="btn" href="/">← Catálogos</a>
+<a class="btn" href="/catalogs/{{ catalog.id }}/preview" target="_blank">Vista previa</a>
+<a class="btn btn-primary" href="/catalogs/{{ catalog.id }}/pdf">Descargar PDF</a>
+{% endblock %}
+
+{% block content %}
+<div class="editor-layout">
+  <aside class="editor-nav">
+    <a href="#empresa">Empresa</a>
+    <a href="#plantilla">Plantilla</a>
+    <a href="#tema">Tema</a>
+    <a href="#redes">Redes sociales</a>
+    <a href="#tips">Recomendaciones</a>
+    <a href="#productos">Productos ({{ catalog.products | length }})</a>
+  </aside>
+
+  <div class="editor-main">
+    <h1>{{ catalog.name }}</h1>
+
+    <form method="post" action="/catalogs/{{ catalog.id }}" id="catalog-form">
+
+      <section id="empresa" class="card">
+        <h2>Datos del catálogo</h2>
+        <div class="grid-2">
+          <label><span>Nombre interno</span>
+            <input type="text" name="name" value="{{ catalog.name }}" required>
+          </label>
+          <label><span>Empresa</span>
+            <input type="text" name="company_name" value="{{ catalog.company_name }}">
+          </label>
+          <label class="full"><span>Tagline</span>
+            <input type="text" name="company_tagline" value="{{ catalog.company_tagline }}">
+          </label>
+          <label class="full"><span>Descripción (2 párrafos, separados por línea en blanco)</span>
+            <textarea name="company_description" rows="6">{{ catalog.company_description }}</textarea>
+          </label>
+          <label><span>Título del catálogo</span>
+            <input type="text" name="catalog_title" value="{{ catalog.catalog_title }}" placeholder="Salud & Bienestar">
+          </label>
+          <label><span>Subtítulo / eyebrow</span>
+            <input type="text" name="catalog_subtitle" value="{{ catalog.catalog_subtitle }}" placeholder="Catálogo · Línea Premium">
+          </label>
+          <label><span>Edición</span>
+            <input type="text" name="edition" value="{{ catalog.edition }}" placeholder="Edición 2026 · Vol. 01">
+          </label>
+          <label><span>Etiqueta categoría (header)</span>
+            <input type="text" name="category_label" value="{{ catalog.category_label }}">
+          </label>
+          <label><span>Sitio web</span>
+            <input type="text" name="company_website" value="{{ catalog.company_website }}">
+          </label>
+          <label><span>Teléfono</span>
+            <input type="text" name="company_phone" value="{{ catalog.company_phone }}">
+          </label>
+          <label><span>Correo</span>
+            <input type="email" name="company_email" value="{{ catalog.company_email }}">
+          </label>
+          <label><span>País</span>
+            <input type="text" name="company_country" value="{{ catalog.company_country }}">
+          </label>
+        </div>
+      </section>
+
+      <section id="plantilla" class="card">
+        <h2>Plantilla del PDF</h2>
+        <div class="tpl-choices">
+          {% for t in templates %}
+          <label class="tpl-choice">
+            <input type="radio" name="template_name" value="{{ t.key }}" {% if catalog.template_name == t.key %}checked{% endif %}>
+            <div class="tpl-choice-body">
+              <strong>{{ t.label }}</strong>
+              <span class="muted small">{{ t.description }}</span>
+            </div>
+          </label>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section id="tema" class="card">
+        <h2>Colores del tema</h2>
+        <div class="grid-2">
+          <label><span>Primario</span>
+            <input type="color" name="theme_primary" value="{{ catalog.theme.primary }}">
+          </label>
+          <label><span>Primario oscuro</span>
+            <input type="color" name="theme_primary_dark" value="{{ catalog.theme.primary_dark }}">
+          </label>
+          <label><span>Crema</span>
+            <input type="color" name="theme_cream" value="{{ catalog.theme.cream }}">
+          </label>
+          <label><span>Acento</span>
+            <input type="color" name="theme_accent" value="{{ catalog.theme.accent }}">
+          </label>
+          <label><span>Acento cálido</span>
+            <input type="color" name="theme_accent_warm" value="{{ catalog.theme.accent_warm }}">
+          </label>
+        </div>
+      </section>
+
+      <section id="redes" class="card">
+        <h2>Redes sociales</h2>
+        <p class="muted small">Agrega las redes que quieres mostrar en la última página.</p>
+        <div id="socials-list" class="repeater">
+          {% for s in catalog.socials %}
+          <div class="repeater-row">
+            <input type="text" placeholder="Instagram" value="{{ s.label }}" data-k="label">
+            <input type="text" placeholder="@usuario" value="{{ s.handle }}" data-k="handle">
+            <input type="text" placeholder="instagram.com/usuario" value="{{ s.url }}" data-k="url">
+            <button type="button" class="btn btn-ghost danger" onclick="this.parentElement.remove(); syncHidden();">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn" onclick="addSocial()">+ Agregar red</button>
+        <input type="hidden" name="socials_json" id="socials-json">
+      </section>
+
+      <section id="tips" class="card">
+        <h2>Recomendaciones</h2>
+        <div id="tips-list" class="repeater">
+          {% for t in catalog.tips %}
+          <div class="repeater-row tip-row">
+            <input type="text" placeholder="Título" value="{{ t.title }}" data-k="title">
+            <textarea rows="2" placeholder="Descripción" data-k="body">{{ t.body }}</textarea>
+            <button type="button" class="btn btn-ghost danger" onclick="this.parentElement.remove(); syncHidden();">✕</button>
+          </div>
+          {% endfor %}
+        </div>
+        <button type="button" class="btn" onclick="addTip()">+ Agregar tip</button>
+        <input type="hidden" name="tips_json" id="tips-json">
+      </section>
+
+      <div class="form-actions sticky-bottom">
+        <button type="submit" class="btn btn-primary btn-lg">💾 Guardar cambios</button>
+      </div>
+    </form>
+
+    <section id="productos" class="card">
+      <div class="section-head-inline">
+        <h2>Productos ({{ catalog.products | length }})</h2>
+        <button class="btn btn-primary" onclick="document.getElementById('new-prod').showModal()">+ Nuevo producto</button>
+      </div>
+
+      {% if catalog.products %}
+      <ul class="prod-list">
+        {% for p in catalog.products %}
+        <li class="prod-item">
+          <div class="prod-thumb">
+            {% if p.image_path %}
+              <img src="/uploads/{{ p.image_path }}" alt="{{ p.name }}">
+            {% else %}
+              <div class="no-img">sin imagen</div>
+            {% endif %}
+          </div>
+          <div class="prod-body">
+            <div class="prod-code-sm">{{ p.code }}</div>
+            <div class="prod-title">{{ p.name }}</div>
+            <div class="muted small">{{ p.tagline }}</div>
+            <div class="prod-price">{{ p.price_label }}</div>
+          </div>
+          <div class="prod-actions">
+            <form method="post" action="/catalogs/{{ catalog.id }}/products/{{ p.id }}/move" style="display:inline">
+              <input type="hidden" name="direction" value="up">
+              <button class="btn btn-ghost" title="Subir">▲</button>
+            </form>
+            <form method="post" action="/catalogs/{{ catalog.id }}/products/{{ p.id }}/move" style="display:inline">
+              <input type="hidden" name="direction" value="down">
+              <button class="btn btn-ghost" title="Bajar">▼</button>
+            </form>
+            <a class="btn btn-outline" href="/catalogs/{{ catalog.id }}/products/{{ p.id }}/edit">Editar</a>
+            <form method="post" action="/catalogs/{{ catalog.id }}/products/{{ p.id }}/delete" style="display:inline"
+                  onsubmit="return confirm('¿Eliminar este producto?');">
+              <button class="btn btn-ghost danger">✕</button>
+            </form>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="muted">Aún no has añadido productos.</p>
+      {% endif %}
+    </section>
+  </div>
+</div>
+
+<!-- Modal: nuevo producto -->
+<dialog id="new-prod" class="dialog dialog-lg product-dialog">
+  <form method="post" action="/catalogs/{{ catalog.id }}/products" enctype="multipart/form-data">
+    <div class="dialog-head sticky-head">
+      <div>
+        <h2>Nuevo producto</h2>
+        <p class="muted small">Completa la ficha y guarda cuando este lista.</p>
+      </div>
+      <button type="button" class="btn btn-ghost dialog-close" aria-label="Cerrar" onclick="document.getElementById('new-prod').close()">✕</button>
+    </div>
+    <div class="dialog-scroll">
+      <div class="grid-2 product-form-grid">
+        <label class="full"><span>Nombre *</span>
+          <input type="text" name="name" required>
+        </label>
+        <label><span>Código</span><input type="text" name="code" placeholder="auto"></label>
+        <label><span>Precio USD</span><input type="number" step="0.01" name="price_usd" value="0"></label>
+        <label class="full"><span>Tagline</span><input type="text" name="tagline"></label>
+        <label class="full"><span>Imagen</span><input type="file" name="image" accept="image/*"></label>
+        <label class="full"><span>Descripción</span><textarea name="description" rows="3"></textarea></label>
+        <label><span>Beneficios (uno por línea)</span><textarea name="benefits" rows="3"></textarea></label>
+        <label><span>Ingredientes (uno por línea)</span><textarea name="ingredients" rows="3"></textarea></label>
+        <label><span>Modo de uso</span><textarea name="usage" rows="3"></textarea></label>
+        <label><span>Presentación (una por línea)</span><textarea name="presentation" rows="3"></textarea></label>
+      </div>
+    </div>
+    <div class="dialog-actions sticky-actions">
+      <button type="button" class="btn" onclick="document.getElementById('new-prod').close()">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar producto</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+// Repeaters: sincronizar DOM → hidden JSON antes de submit.
+function readRepeater(listId){
+  const out = [];
+  document.querySelectorAll('#'+listId+' .repeater-row').forEach(row => {
+    const obj = {};
+    row.querySelectorAll('[data-k]').forEach(el => { obj[el.dataset.k] = el.value; });
+    if (Object.values(obj).some(v => (v||'').trim())) out.push(obj);
+  });
+  return out;
+}
+function syncHidden(){
+  document.getElementById('socials-json').value = JSON.stringify(readRepeater('socials-list'));
+  document.getElementById('tips-json').value    = JSON.stringify(readRepeater('tips-list'));
+}
+function addSocial(){
+  const row = document.createElement('div');
+  row.className = 'repeater-row';
+  row.innerHTML = `<input type="text" placeholder="Instagram" data-k="label">
+    <input type="text" placeholder="@usuario" data-k="handle">
+    <input type="text" placeholder="url" data-k="url">
+    <button type="button" class="btn btn-ghost danger" onclick="this.parentElement.remove(); syncHidden();">✕</button>`;
+  document.getElementById('socials-list').appendChild(row);
+}
+function addTip(){
+  const row = document.createElement('div');
+  row.className = 'repeater-row tip-row';
+  row.innerHTML = `<input type="text" placeholder="Título" data-k="title">
+    <textarea rows="2" placeholder="Descripción" data-k="body"></textarea>
+    <button type="button" class="btn btn-ghost danger" onclick="this.parentElement.remove(); syncHidden();">✕</button>`;
+  document.getElementById('tips-list').appendChild(row);
+}
+document.getElementById('catalog-form').addEventListener('submit', syncHidden);
+syncHidden();
+</script>
+{% endblock %}

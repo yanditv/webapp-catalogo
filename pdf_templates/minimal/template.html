@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>{{ company.name }} · {{ company.catalog_title }}</title>
+<style>
+@font-face { font-family: 'Raleway'; src: url('../../fonts/Raleway-Regular.ttf') format('truetype'); font-weight: 100 900; font-style: normal; }
+@font-face { font-family: 'Raleway'; src: url('../../fonts/Raleway-Italic.ttf') format('truetype'); font-weight: 100 900; font-style: italic; }
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: {{ theme.primary_dark | default('#1B3B2F') }};
+  --accent: {{ theme.accent | default('#B8893A') }};
+  --ink: {{ theme.ink | default('#1E2D24') }};
+  --muted: #8A8F8C;
+  --line: #E5E5E3;
+  --bg: #FFFFFF;
+  --soft: #FAFAF8;
+}
+
+html, body { background: var(--bg); }
+body { font-family: 'Raleway', 'Helvetica Neue', sans-serif; font-size: 10pt; color: var(--ink); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+@page { size: A4 portrait; margin: 0; }
+@page inner {
+  size: A4 portrait;
+  margin: 22mm 20mm 22mm 20mm;
+  @top-left { content: "{{ company.name }}"; font-family: 'Raleway', sans-serif; font-size: 7pt; font-weight: 500; letter-spacing: 2pt; color: var(--muted); }
+  @top-right { content: "{{ company.category_label }}"; font-family: 'Raleway', sans-serif; font-size: 7pt; color: var(--muted); letter-spacing: 1pt; }
+  @bottom-center { content: counter(page); font-family: 'Raleway', sans-serif; font-size: 8pt; color: var(--muted); font-weight: 500; }
+}
+
+/* ─── Portada ─────────────────────────────────────────── */
+.cover { page: cover; width: 210mm; height: 297mm; position: relative; page-break-after: always; background: var(--bg); }
+.cover-inner { position: absolute; top: 40mm; left: 20mm; right: 20mm; bottom: 40mm; display: flex; flex-direction: column; justify-content: space-between; }
+.cover-top { }
+.cover-brand { font-size: 8pt; font-weight: 600; letter-spacing: 3pt; color: var(--muted); text-transform: uppercase; margin-bottom: 60mm; }
+.cover-label { font-size: 7pt; letter-spacing: 3pt; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 10mm; }
+.cover-title { font-size: 54pt; font-weight: 200; color: var(--primary); line-height: 1; margin-bottom: 6mm; letter-spacing: -1pt; }
+.cover-title strong { font-weight: 700; }
+.cover-divider { width: 30mm; height: 1px; background: var(--accent); margin: 12mm 0; }
+.cover-tagline { font-size: 12pt; color: var(--ink); max-width: 120mm; font-weight: 300; line-height: 1.5; font-style: italic; }
+.cover-bottom { display: flex; justify-content: space-between; align-items: flex-end; font-size: 7pt; letter-spacing: 1.5pt; color: var(--muted); text-transform: uppercase; }
+
+/* ─── Páginas internas ─────────────────────────────────── */
+.page { page: inner; page-break-before: always; }
+
+.section-head { margin-bottom: 14mm; }
+.eyebrow { font-size: 7pt; font-weight: 700; letter-spacing: 3pt; color: var(--accent); text-transform: uppercase; margin-bottom: 4mm; }
+.sec-title { font-size: 32pt; font-weight: 200; color: var(--primary); line-height: 1.1; letter-spacing: -0.5pt; }
+.sec-title strong { font-weight: 700; }
+
+.lead { font-size: 11pt; line-height: 1.7; color: var(--ink); max-width: 140mm; margin-bottom: 12mm; font-weight: 300; }
+
+.two-col { column-count: 2; column-gap: 10mm; font-size: 9.5pt; line-height: 1.75; color: var(--ink); }
+.two-col p { margin-bottom: 4mm; break-inside: avoid; }
+
+.stats { display: flex; justify-content: space-between; margin-top: 16mm; padding-top: 8mm; border-top: 1px solid var(--line); }
+.stat { flex: 1; }
+.stat-num { font-size: 28pt; font-weight: 200; color: var(--primary); line-height: 1; }
+.stat-lab { font-size: 7pt; color: var(--muted); letter-spacing: 1.5pt; text-transform: uppercase; margin-top: 3mm; }
+
+/* Índice */
+.idx { width: 100%; border-collapse: collapse; }
+.idx tr { border-bottom: 0.3pt solid var(--line); }
+.idx td { padding: 7mm 0; vertical-align: middle; }
+.idx .n { width: 14mm; font-size: 10pt; color: var(--accent); font-weight: 600; }
+.idx .nm { font-size: 12pt; font-weight: 400; color: var(--ink); }
+.idx .pr { text-align: right; font-size: 10pt; color: var(--muted); font-weight: 500; }
+
+/* Producto */
+.prod { page: inner; page-break-before: always; }
+.prod-img-wrap { text-align: center; padding: 10mm 0 14mm 0; border-bottom: 1px solid var(--line); margin-bottom: 12mm; }
+.prod-img-wrap img { max-width: 70%; max-height: 100mm; }
+.prod-code { font-size: 7pt; letter-spacing: 3pt; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 4mm; }
+.prod-name { font-size: 26pt; font-weight: 200; color: var(--primary); line-height: 1.1; margin-bottom: 4mm; letter-spacing: -0.5pt; }
+.prod-name strong { font-weight: 700; }
+.prod-tag { font-size: 11pt; color: var(--muted); font-style: italic; margin-bottom: 6mm; max-width: 140mm; line-height: 1.5; }
+.prod-desc { font-size: 9.5pt; line-height: 1.7; color: var(--ink); margin-bottom: 8mm; max-width: 160mm; }
+
+.prod-detail-grid { width: 100%; border-collapse: collapse; margin-top: 6mm; }
+.prod-detail-grid td { width: 33.33%; padding: 6mm 6mm 6mm 0; vertical-align: top; border-top: 1px solid var(--line); }
+.prod-detail-grid td:last-child { padding-right: 0; }
+.d-lab { font-size: 6.5pt; font-weight: 700; letter-spacing: 2pt; color: var(--accent); text-transform: uppercase; margin-bottom: 4mm; }
+.d-body { font-size: 9pt; line-height: 1.6; color: var(--ink); }
+.d-body .bul { margin-bottom: 1.5mm; }
+.d-body .bul::before { content: "— "; color: var(--accent); }
+
+.price-line { display: flex; align-items: baseline; gap: 3mm; margin: 6mm 0 8mm 0; padding-bottom: 4mm; border-bottom: 1px solid var(--line); }
+.price-lab { font-size: 7pt; letter-spacing: 2pt; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+.price-val { font-size: 22pt; font-weight: 200; color: var(--primary); letter-spacing: -0.5pt; }
+
+/* Recomendaciones */
+.tips-list { margin-top: 4mm; }
+.tip-item { display: flex; gap: 8mm; padding: 6mm 0; border-bottom: 0.3pt solid var(--line); break-inside: avoid; }
+.tip-num { font-size: 22pt; font-weight: 200; color: var(--accent); line-height: 1; min-width: 14mm; }
+.tip-content { flex: 1; }
+.tip-title { font-size: 11pt; font-weight: 600; color: var(--primary); margin-bottom: 2mm; }
+.tip-text { font-size: 9.5pt; line-height: 1.65; color: var(--ink); }
+.legal { margin-top: 10mm; font-size: 7.5pt; color: var(--muted); font-style: italic; line-height: 1.5; }
+
+/* Contacto */
+.c-block { margin-bottom: 10mm; padding-bottom: 6mm; border-bottom: 1px solid var(--line); }
+.c-row { display: flex; margin-bottom: 4mm; }
+.c-lab { width: 28mm; font-size: 7pt; font-weight: 700; letter-spacing: 2pt; color: var(--muted); text-transform: uppercase; padding-top: 2mm; }
+.c-val { flex: 1; font-size: 12pt; color: var(--primary); font-weight: 400; }
+
+.soc-list { display: flex; flex-wrap: wrap; gap: 8mm 12mm; margin-top: 4mm; }
+.soc-item { min-width: 60mm; }
+.soc-lab { font-size: 6.5pt; letter-spacing: 2pt; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 1mm; }
+.soc-hand { font-size: 10pt; color: var(--primary); font-weight: 500; margin-bottom: 0.5mm; }
+.soc-url { font-size: 8pt; color: var(--muted); }
+
+.close { text-align: center; margin-top: 18mm; padding-top: 12mm; border-top: 1px solid var(--line); }
+.close-q { font-size: 13pt; font-style: italic; color: var(--primary); font-weight: 300; margin-bottom: 5mm; max-width: 140mm; margin-left: auto; margin-right: auto; }
+.close-brand { font-size: 8pt; letter-spacing: 3pt; color: var(--accent); text-transform: uppercase; font-weight: 700; margin-bottom: 2mm; }
+.close-thx { font-size: 9pt; color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover-inner">
+    <div class="cover-top">
+      <div class="cover-brand">{{ company.name }}</div>
+      <div class="cover-label">{{ company.catalog_subtitle or 'Catálogo' }}</div>
+      <div class="cover-title">{{ company.catalog_title or 'Catálogo' }}</div>
+      <div class="cover-divider"></div>
+      <div class="cover-tagline">{{ company.tagline }}</div>
+    </div>
+    <div class="cover-bottom">
+      <div>{{ company.edition }}</div>
+      <div>{{ company.website }}</div>
+    </div>
+  </div>
+</div>
+
+{% if company.description %}
+<div class="page">
+  <div class="section-head">
+    <div class="eyebrow">01 · Sobre nosotros</div>
+    <div class="sec-title">{{ company.name }}</div>
+  </div>
+  <div class="lead">{{ company.tagline }}</div>
+  <div class="two-col">
+    {% for paragraph in company_paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">{{ products | length }}+</div><div class="stat-lab">Productos</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-lab">Envío{% if company.country %} en {{ company.country }}{% endif %}</div></div>
+    <div class="stat"><div class="stat-num">24/7</div><div class="stat-lab">Asesoría</div></div>
+  </div>
+</div>
+{% endif %}
+
+{% if products %}
+<div class="page">
+  <div class="section-head">
+    <div class="eyebrow">02 · Contenido</div>
+    <div class="sec-title">Índice</div>
+  </div>
+  <table class="idx">
+    {% for p in products %}
+    <tr><td class="n">{{ p.code }}</td><td class="nm">{{ p.name }}</td><td class="pr">{{ p.price_label }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% for product in products %}
+<div class="prod">
+  {% if product.image_path %}
+  <div class="prod-img-wrap"><img src="{{ product.image_path }}" alt="{{ product.name }}"></div>
+  {% endif %}
+  <div class="prod-code">Producto · {{ product.code }}</div>
+  <div class="prod-name">{{ product.name }}</div>
+  {% if product.tagline %}<div class="prod-tag">{{ product.tagline }}</div>{% endif %}
+  {% if product.price_label %}
+  <div class="price-line">
+    <div class="price-lab">Inversión</div>
+    <div class="price-val">{{ product.price_label }}</div>
+  </div>
+  {% endif %}
+  {% if product.description %}<div class="prod-desc">{{ product.description }}</div>{% endif %}
+
+  <table class="prod-detail-grid">
+    <tr>
+      <td>
+        <div class="d-lab">Beneficios</div>
+        <div class="d-body">
+          {% if product.benefits %}
+            {% for b in product.benefits %}<div class="bul">{{ b }}</div>{% endfor %}
+          {% else %}—{% endif %}
+        </div>
+      </td>
+      <td>
+        <div class="d-lab">Ingredientes</div>
+        <div class="d-body">{% if product.ingredients %}{{ product.ingredients | join(' · ') }}{% else %}—{% endif %}</div>
+      </td>
+      <td>
+        <div class="d-lab">Modo de uso</div>
+        <div class="d-body">
+          {{ product.usage }}
+          {% if product.presentation %}
+          <div style="margin-top: 3mm; font-size: 7pt; color: var(--muted); letter-spacing: 1pt; text-transform: uppercase;">Presentación</div>
+          {% for pr in product.presentation %}<div>{{ pr }}</div>{% endfor %}
+          {% endif %}
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+{% endfor %}
+
+{% if tips %}
+<div class="page">
+  <div class="section-head">
+    <div class="eyebrow">03 · Antes de consumir</div>
+    <div class="sec-title">Recomendaciones</div>
+  </div>
+  <div class="tips-list">
+    {% for title, body in tips %}
+    <div class="tip-item">
+      <div class="tip-num">{{ '%02d' | format(loop.index) }}</div>
+      <div class="tip-content">
+        <div class="tip-title">{{ title }}</div>
+        <div class="tip-text">{{ body }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="legal">Estos productos no sustituyen tratamientos médicos. Consulta a tu profesional de salud ante cualquier duda.</div>
+</div>
+{% endif %}
+
+<div class="page">
+  <div class="section-head">
+    <div class="eyebrow">04 · Hablemos</div>
+    <div class="sec-title">Contacto</div>
+  </div>
+  <div class="c-block">
+    {% if company.website %}<div class="c-row"><div class="c-lab">Web</div><div class="c-val">{{ company.website }}</div></div>{% endif %}
+    {% if company.phone %}<div class="c-row"><div class="c-lab">Teléfono</div><div class="c-val">{{ company.phone }}</div></div>{% endif %}
+    {% if company.email %}<div class="c-row"><div class="c-lab">Correo</div><div class="c-val">{{ company.email }}</div></div>{% endif %}
+    {% if company.country %}<div class="c-row"><div class="c-lab">Cobertura</div><div class="c-val">Todo {{ company.country }}</div></div>{% endif %}
+  </div>
+
+  {% if socials %}
+  <div class="eyebrow">Síguenos</div>
+  <div class="soc-list">
+    {% for s in socials %}
+    <div class="soc-item">
+      <div class="soc-lab">{{ s.label }}</div>
+      <div class="soc-hand">{{ s.handle }}</div>
+      <div class="soc-url">{{ s.url }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="close">
+    {% if company.tagline %}<div class="close-q">&ldquo;{{ company.tagline }}&rdquo;</div>{% endif %}
+    <div class="close-brand">{{ company.name }}</div>
+    <div class="close-thx">Gracias por confiar en nosotros.</div>
+  </div>
+</div>
+
+</body>
+</html>

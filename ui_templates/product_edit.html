@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Editar · {{ product.name }}{% endblock %}
+
+{% block topnav %}
+<a class="btn" href="/catalogs/{{ catalog.id }}/edit#productos">← Volver al catálogo</a>
+{% endblock %}
+
+{% block content %}
+<div class="editor-main narrow">
+  <div class="product-page-shell">
+    <form method="post" action="/catalogs/{{ catalog.id }}/products/{{ product.id }}" enctype="multipart/form-data" class="card product-card">
+      <div class="dialog-head sticky-head">
+        <div>
+          <h1>Editar producto</h1>
+          <p class="muted">{{ catalog.name }}</p>
+        </div>
+        <a class="btn btn-ghost dialog-close" href="/catalogs/{{ catalog.id }}/edit#productos" aria-label="Cerrar">✕</a>
+      </div>
+      <div class="dialog-scroll">
+        <div class="grid-2 product-form-grid">
+          <label class="full"><span>Nombre *</span>
+            <input type="text" name="name" value="{{ product.name }}" required>
+          </label>
+          <label><span>Código</span>
+            <input type="text" name="code" value="{{ product.code }}">
+          </label>
+          <label><span>Precio USD</span>
+            <input type="number" step="0.01" name="price_usd" value="{{ product.price_usd }}">
+          </label>
+          <label class="full"><span>Tagline</span>
+            <input type="text" name="tagline" value="{{ product.tagline }}">
+          </label>
+          <label class="full"><span>Descripción</span>
+            <textarea name="description" rows="4">{{ product.description }}</textarea>
+          </label>
+          <label><span>Beneficios (uno por línea)</span>
+            <textarea name="benefits" rows="3">{{ product.benefits | join('\n') }}</textarea>
+          </label>
+          <label><span>Ingredientes (uno por línea)</span>
+            <textarea name="ingredients" rows="3">{{ product.ingredients | join('\n') }}</textarea>
+          </label>
+          <label><span>Modo de uso</span>
+            <textarea name="usage" rows="3">{{ product.usage }}</textarea>
+          </label>
+          <label><span>Presentación (una por línea)</span>
+            <textarea name="presentation" rows="3">{{ product.presentation | join('\n') }}</textarea>
+          </label>
+
+          <div class="full">
+            <span class="label">Imagen</span>
+            {% if product.image_path %}
+            <div class="current-image">
+              <img src="/uploads/{{ product.image_path }}" alt="">
+              <label class="chk"><input type="checkbox" name="remove_image" value="1"> Eliminar imagen</label>
+            </div>
+            {% endif %}
+            <input type="file" name="image" accept="image/*">
+            <p class="muted small">Deja vacío para conservar la imagen actual.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions sticky-actions">
+        <a class="btn" href="/catalogs/{{ catalog.id }}/edit#productos">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Guardar producto</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
