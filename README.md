@@ -126,6 +126,27 @@ catalogo-webapp.exe
 ### Nota importante sobre WeasyPrint en Windows
 Para que la generación de PDF funcione en Windows, la máquina de build y de uso debe tener disponibles las librerías nativas que WeasyPrint necesita. Si al exportar PDF ves errores relacionados con GTK, Pango o Cairo, instala el runtime correspondiente en Windows antes de compilar o ejecutar el `.exe`.
 
+### Autodetección de GTK en el ejecutable
+El `launcher.py` ya intenta encontrar GTK automáticamente en estas rutas comunes:
+
+- `GTK_BIN` definido como variable de entorno
+- `.\gtk-runtime\bin` junto al `.exe`
+- `.\gtk\bin` junto al `.exe`
+- `C:\msys64\ucrt64\bin`
+- `C:\msys64\mingw64\bin`
+
+La forma más práctica para no tocar mucho el sistema del cliente es esta:
+
+1. Instala GTK/MSYS2 en tu máquina de build.
+2. Copia las DLL necesarias desde `C:\msys64\ucrt64\bin` a una carpeta:
+   `dist\gtk-runtime\bin`
+3. Entrega al cliente:
+   - `catalogo-webapp.exe`
+   - carpeta `gtk-runtime\bin`
+   - carpeta `data\` si corresponde
+
+Con eso, el ejecutable intentará cargar GTK localmente sin depender del `PATH` global de Windows.
+
 ## Estructura
 ```
 webapp/

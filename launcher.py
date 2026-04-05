@@ -24,6 +24,40 @@ def _log(message: str) -> None:
         fh.write(message.rstrip() + "\n")
 
 
+def _configure_windows_gtk() -> None:
+    if os.name != "nt":
+        return
+
+    candidates = []
+
+    env_gtk_bin = os.environ.get("GTK_BIN")
+    if env_gtk_bin:
+        candidates.append(Path(env_gtk_bin))
+
+    candidates.extend([
+        RUNTIME_DIR / "gtk-runtime" / "bin",
+        RUNTIME_DIR / "gtk" / "bin",
+        Path(r"C:\msys64\ucrt64\bin"),
+        Path(r"C:\msys64\mingw64\bin"),
+        Path(r"C:\Program Files\GTK3-Runtime Win64\bin"),
+        Path(r"C:\Program Files (x86)\GTK3-Runtime Win64\bin"),
+    ])
+
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+        probe = candidate / "libgobject-2.0-0.dll"
+        if not probe.exists():
+            continue
+        os.environ["PATH"] = str(candidate) + os.pathsep + os.environ.get("PATH", "")
+        if hasattr(os, "add_dll_directory"):
+            os.add_dll_directory(str(candidate))
+        _log(f"[INFO] GTK detectado en {candidate}")
+        return
+
+    _log("[WARN] No se encontro runtime GTK compatible en rutas conocidas.")
+
+
 def _wait_until_ready(timeout: float = 25.0) -> bool:
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -54,6 +88,7 @@ def _open_browser() -> None:
 if __name__ == "__main__":
     _log("[INFO] launcher iniciado")
     try:
+        _configure_windows_gtk()
         import uvicorn
         from main import app
 
