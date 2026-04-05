@@ -13,7 +13,6 @@ if sys.platform == "darwin":
             os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = f"{_brew}:{_cur}" if _cur else _brew
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from weasyprint import HTML
 
 from db import APP_DIR, UPLOADS_DIR
 from models import Catalog
@@ -115,6 +114,8 @@ def render_html(catalog: Catalog) -> str:
 
 
 def render_pdf(catalog: Catalog, output_path: Path | None = None) -> bytes:
+    from weasyprint import HTML
+
     html_content = render_html(catalog)
     base_url = str(PDF_TEMPLATES_DIR / (catalog.template_name or "editorial")) + "/"
     html = HTML(string=html_content, base_url=base_url)

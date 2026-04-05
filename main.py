@@ -413,7 +413,17 @@ def catalog_pdf(
     db: Session = Depends(get_session),
 ):
     catalog = _get_catalog_or_404(db, catalog_id)
-    pdf_bytes = render_pdf(catalog)
+    try:
+        pdf_bytes = render_pdf(catalog)
+    except OSError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "La exportacion PDF no esta disponible en este entorno porque "
+                "faltan librerias nativas de WeasyPrint/GTK. "
+                f"Detalle tecnico: {exc}"
+            ),
+        ) from exc
     safe_name = (catalog.name or "catalogo").replace(" ", "-").lower()
     disposition = "inline" if inline else "attachment"
     headers = {
