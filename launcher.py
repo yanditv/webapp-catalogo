@@ -10,9 +10,6 @@ import webbrowser
 from pathlib import Path
 from urllib.request import urlopen
 
-import uvicorn
-
-
 HOST = os.environ.get("CATALOGOS_HOST", "127.0.0.1")
 PORT = int(os.environ.get("CATALOGOS_PORT", "8000"))
 APP_URL = f"http://{HOST}:{PORT}"
@@ -55,7 +52,10 @@ def _open_browser() -> None:
 
 
 if __name__ == "__main__":
+    _log("[INFO] launcher iniciado")
     try:
+        import uvicorn
+
         threading.Thread(target=_open_browser, daemon=True).start()
         uvicorn.run(
             "main:app",
